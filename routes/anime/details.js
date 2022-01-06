@@ -23,28 +23,32 @@ const urls = {
       ".anime-info-container .anime-info-left .anime-details .anime-story",
     anime_desc_attr: "",
     anime_desc_with_attr: false,
+    anime_genres: ".anime-genres li",
   },
 };
 
 router.post("/", async (req, res) => {
-  console.log(req.body);
-  const title = req.title;
+  const title = req.body.title;
   const details = {
     img: "",
     title: "",
     description: "",
+    genres: [],
   };
   const site = urls["0"];
-  let url = site.anime_url + "naruto";
-  console.log(url);
+  let url = site.anime_url + title;
   await axios(url)
     .then((response) => {
       const html = response.data;
       const $ = cheerio.load(html);
+      let genres = [];
+      $(site.genres).each(function () {
+        genres.push($(this).text());
+      });
+      details.genres = genres;
+
       if (site.anime_img_with_src) {
-        let img = $(site.anime_img).find("img").attr("src");
-        details.img = img;
-        console.log(img);
+        details.img = $(site.anime_img).find("img").attr("src");
       } else {
         details.img = $(site.anime_img).text();
       }
@@ -60,12 +64,13 @@ router.post("/", async (req, res) => {
       } else {
         details.title = $(site.anime_title).text();
       }
+      res.send(JSON.stringify(details));
     })
     .catch((error) => {
-      console.log("error: " + error.message);
+      console.log(req.body);
+      console.log(`error [${title}]: ` + error.message);
       res.status(404).send("Error: " + error.message);
     });
-  res.send(JSON.stringify(details));
 });
 
 module.exports = router;

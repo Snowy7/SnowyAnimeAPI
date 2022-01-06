@@ -41,15 +41,18 @@ router.get("/", async (req, res) => {
         let image = $(this)
           .find(urls["0"].latest_img)
           .attr(urls["0"].latest_img_attr);
-        let ep = $(urls["0"].latest_ep_url).attr(urls["0"].latest_ep_url_attr);
-        let url = $(urls["0"].latest_anime_url).text();
+        let ep = $(this)
+          .find(urls["0"].latest_ep_url)
+          .attr(urls["0"].latest_ep_url_attr);
+        let url = $(this).find(urls["0"].latest_anime_url).text();
         if (urls["0"].latest_anime_needs_attr) {
-          url = $(urls["0"].latest_anime_url).attr(
-            urls["0"].latest_anime_url_attr
-          );
+          url = $(this)
+            .find(urls["0"].latest_anime_url)
+            .attr(urls["0"].latest_anime_url_attr);
         }
-        url = url.replace(urls["0"].anime_url);
-        ep = ep.replace(urls["0"].ep_url);
+
+        url = url.replace(urls["0"].anime_url, "");
+        ep = ep.replace(urls["0"].ep_url, "");
         latest.push({
           id,
           title,
